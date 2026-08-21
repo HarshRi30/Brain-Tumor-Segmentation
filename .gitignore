@@ -1,0 +1,47 @@
+# ── Dataset & large data files ────────────────────────────────────────────────
+*.zip
+*.tar.gz
+*.rar
+
+# NIfTI MRI files (raw scans — too large for GitHub, use DGX server)
+*.nii
+*.nii.gz
+
+# ── Model checkpoints ─────────────────────────────────────────────────────────
+checkpoints/
+*.pth
+*.pt
+*.ckpt
+
+# ── Training outputs ──────────────────────────────────────────────────────────
+results/*.png
+results/*.txt
+results/*.csv
+results/*.json
+logs/
+demo_output.png
+demo_run.log
+
+# ── Python cache ──────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.ipynb_checkpoints/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Environments ──────────────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+*.env
+
+# ── OS & editor junk ──────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

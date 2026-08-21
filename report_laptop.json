@@ -1,0 +1,109 @@
+{
+  "generated_at": "2026-08-20T13:16:09.900616",
+  "config": {
+    "dataset": "\\home\\yourname\\BraTS2023_Training_Data",
+    "n_patients": 600,
+    "patch_size": [
+      96,
+      96,
+      96
+    ],
+    "batch_size": 2,
+    "epochs": 150,
+    "n_folds": 3
+  },
+  "hardware": {
+    "gpus": [
+      {
+        "index": 0,
+        "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+        "vram_total_gb": 7.99609375,
+        "vram_free_gb": 7.7392578125,
+        "temp_c": "50",
+        "util_pct": "2",
+        "sm_count": null,
+        "compute_cap": null
+      }
+    ],
+    "cpu_cores": 16,
+    "cpu_model": "13th Gen Intel(R) Core(TM) i7-13620H",
+    "ram_total_gb": 16.788738048,
+    "ram_avail_gb": 4.435898368,
+    "disk_info": {}
+  },
+  "dataset": {
+    "path": "\\home\\yourname\\BraTS2023_Training_Data",
+    "exists": false,
+    "n_patients": 600,
+    "raw_size_gb": 0.0
+  },
+  "vram_estimates": [
+    {
+      "model": "3D U-Net (Baseline)",
+      "params_gb": 0.14,
+      "activations_gb": 1.2,
+      "input_gb": 0.028,
+      "overhead_gb": 0.14,
+      "total_gb": 1.51
+    },
+    {
+      "model": "Attention U-Net 3D (Ours)",
+      "params_gb": 0.18,
+      "activations_gb": 1.44,
+      "input_gb": 0.028,
+      "overhead_gb": 0.17,
+      "total_gb": 1.82
+    },
+    {
+      "model": "Channel Attention only",
+      "params_gb": 0.15,
+      "activations_gb": 1.44,
+      "input_gb": 0.028,
+      "overhead_gb": 0.16,
+      "total_gb": 1.78
+    },
+    {
+      "model": "Spatial Attention only",
+      "params_gb": 0.16,
+      "activations_gb": 1.44,
+      "input_gb": 0.028,
+      "overhead_gb": 0.16,
+      "total_gb": 1.8
+    }
+  ],
+  "time_estimates": {
+    "gpu_tier": "Unknown",
+    "iters_per_sec": 3.0,
+    "preprocess_hrs": 0.83,
+    "models": {
+      "3D U-Net (Baseline)": 20.0,
+      "Attention U-Net 3D (Ours)": 25.0,
+      "Channel Attention only": 21.25,
+      "Spatial Attention only": 22.5
+    },
+    "evaluation_hrs": 0.5,
+    "ablation_hrs": 43.75,
+    "visualise_hrs": 0.5,
+    "total_gpu_hrs": 90.58,
+    "human_hours": {
+      "Environment setup & WinSCP transfer": 2.0,
+      "Dataset inspection & EDA notebook": 1.5,
+      "Pre-processing notebook (01)": 0.5,
+      "Baseline training monitoring (03)": 1.0,
+      "Attention U-Net training monitoring (04)": 1.0,
+      "Evaluation & ablation notebooks (05,06)": 2.0,
+      "Visualisation & Grad-CAM (07)": 1.5,
+      "Report writing & result tables": 6.0,
+      "Buffer / debugging": 2.0
+    },
+    "total_human_hrs": 17.5
+  },
+  "storage_estimates": {
+    "raw_dataset_gb": 17.6,
+    "preprocessed_gb": 17.0,
+    "checkpoints_gb": 7.9,
+    "logs_gb": 0.5,
+    "results_gb": 0.2,
+    "total_gb": 43.2
+  }
+}
