@@ -282,7 +282,8 @@ def get_dataloaders(dataset_path: str, batch_size: int = 2,
                     quick_test: bool = False, quick_test_n: int = 10
                     ) -> Tuple[DataLoader, DataLoader, DataLoader, List[str]]:
     """
-    Discover patients, split into train/val/test, return DataLoaders.
+    Discover patients, split into train/val/test using SUBJECT-LEVEL grouping
+    (preventing multi-scan patient leakage), return DataLoaders.
 
     Returns: train_loader, val_loader, test_loader, test_folders
     """
@@ -292,28 +293,52 @@ def get_dataloaders(dataset_path: str, batch_size: int = 2,
 
     if quick_test:
         folders = folders[:quick_test_n]
-        print(f"[QUICK TEST MODE] Using {len(folders)} patients.")
+        print(f"[QUICK TEST MODE] Using {len(folders)} scans.")
     elif max_patients and max_patients < len(folders):
         folders = folders[:max_patients]
-        print(f"[INFO] Using {len(folders)} / {len(folders)} patients.")
+        print(f"[INFO] Using {len(folders)} / {len(folders)} scans.")
 
-    np.random.shuffle(folders)
+    # ── Group by unique Subject ID (BraTS-GLI-XXXXX) to PREVENT DATA LEAKAGE ──
+    # Some subjects have multiple scans (e.g. baseline -000 and follow-up -001).
+    # All scans from the same subject MUST stay in the same split.
+    from collections import defaultdict
+    subject_to_folders = defaultdict(list)
+    for f in folders:
+        match = re.search(r"(BraTS-GLI-\d{5})", Path(f).name)
+        subj_id = match.group(1) if match else Path(f).name
+        subject_to_folders[subj_id].append(f)
 
-    # Hold out 10% for final test (never seen during training)
-    n_test = max(1, int(len(folders) * 0.10))
-    test_folders  = folders[-n_test:]
-    trainval_folders = folders[:-n_test]
+    unique_subjects = sorted(list(subject_to_folders.keys()))
+    np.random.shuffle(unique_subjects)
 
-    # K-Fold on train+val
+    # Hold out 10% of unique subjects for final test set
+    n_test_subj = max(1, int(len(unique_subjects) * 0.10))
+    test_subj = unique_subjects[-n_test_subj:]
+    trainval_subj = unique_subjects[:-n_test_subj]
+
+    test_folders = [f for s in test_subj for f in subject_to_folders[s]]
+
+    # K-Fold on unique training/validation subjects
+    from sklearn.model_selection import KFold
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=RANDOM_SEED)
-    splits = list(kf.split(trainval_folders))
-    train_idx, val_idx = splits[fold]
+    splits = list(kf.split(trainval_subj))
+    train_subj_idx, val_subj_idx = splits[fold]
 
-    train_folders = [trainval_folders[i] for i in train_idx]
-    val_folders   = [trainval_folders[i] for i in val_idx]
+    train_folders = [f for i in train_subj_idx for f in subject_to_folders[trainval_subj[i]]]
+    val_folders   = [f for i in val_subj_idx   for f in subject_to_folders[trainval_subj[i]]]
 
-    print(f"Fold {fold}/{n_folds}: "
-          f"Train={len(train_folders)}, Val={len(val_folders)}, Test={len(test_folders)}")
+    # Verify zero leakage across splits
+    train_s = set(re.search(r"(BraTS-GLI-\d{5})", Path(f).name).group(1) for f in train_folders)
+    val_s   = set(re.search(r"(BraTS-GLI-\d{5})", Path(f).name).group(1) for f in val_folders)
+    test_s  = set(re.search(r"(BraTS-GLI-\d{5})", Path(f).name).group(1) for f in test_folders)
+    assert len(train_s.intersection(val_s)) == 0, "Data Leakage detected between Train and Val!"
+    assert len(train_s.intersection(test_s)) == 0, "Data Leakage detected between Train and Test!"
+    assert len(val_s.intersection(test_s)) == 0, "Data Leakage detected between Val and Test!"
+
+    print(f"Fold {fold}/{n_folds} (Subject-Grouped, 0 Leakage): "
+          f"Train={len(train_folders)} scans ({len(train_s)} subjects), "
+          f"Val={len(val_folders)} scans ({len(val_s)} subjects), "
+          f"Test={len(test_folders)} scans ({len(test_s)} subjects)")
 
     train_ds = BraTS2023Dataset(train_folders, augment=True)
     val_ds   = BraTS2023Dataset(val_folders,   augment=False)
