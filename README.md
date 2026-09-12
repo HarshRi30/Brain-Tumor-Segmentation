@@ -50,10 +50,10 @@ Run the unified training script directly. It supports background execution via `
 
 ```bash
 # Train Proposed Dual-Attention 3D U-Net (Hybrid SE + Spatial Attention):
-python train.py --model_variant hybrid --dataset_path /path/to/BraTS2023_Training_Data
+python train.py --model_variant hybrid --dataset_path "<UPDATE THIS TO YOUR ACTUAL DATASET LOCATION ON THE SERVER — e.g. /GPFS_CLUSTER/students/student02/Dataset_final>"
 
 # Train Baseline 3D U-Net (for comparison):
-python train.py --model_variant baseline --dataset_path /path/to/BraTS2023_Training_Data
+python train.py --model_variant baseline --dataset_path "<UPDATE THIS TO YOUR ACTUAL DATASET LOCATION ON THE SERVER — e.g. /GPFS_CLUSTER/students/student02/Dataset_final>"
 
 # Train Ablation Variants:
 python train.py --model_variant channel   # Squeeze-and-Excitation channel attention only
@@ -68,7 +68,7 @@ python train.py --model_variant hybrid --quick_test
 
 ### 3. Running in the Background via `nohup`
 ```bash
-nohup python train.py --model_variant hybrid --dataset_path /path/to/BraTS2023 > train_hybrid.log 2>&1 &
+nohup python train.py --model_variant hybrid --dataset_path "<UPDATE THIS TO YOUR ACTUAL DATASET LOCATION ON THE SERVER — e.g. /GPFS_CLUSTER/students/student02/Dataset_final>" > train_hybrid.log 2>&1 &
 ```
 
 ### 4. Standalone Evaluation (`evaluate.py`)

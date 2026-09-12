@@ -13,11 +13,11 @@ import torch
 # =============================================================================
 DATASET_PATH = os.environ.get(
     "BRATS_DATASET_PATH",
-    "/home/yourname/BraTS2023_Training_Data"
+    "<UPDATE THIS TO YOUR ACTUAL DATASET LOCATION ON THE SERVER — e.g. /GPFS_CLUSTER/students/student02/Dataset_final>"
 )
 VALIDATION_PATH = os.environ.get(
     "BRATS_VALIDATION_PATH",
-    "/home/yourname/BraTS2023_Validation_Data"
+    "<UPDATE THIS TO YOUR ACTUAL VALIDATION DATASET LOCATION ON THE SERVER>"
 )
 PREPROCESSED_PATH = os.environ.get(
     "BRATS_PREPROCESSED_PATH",
@@ -33,7 +33,7 @@ def ensure_directories(dirs: List[str] = None) -> None:
     if dirs is None:
         dirs = [CHECKPOINT_DIR, RESULTS_DIR, LOGS_DIR]
     for d in dirs:
-        if d and not str(d).startswith("/home/yourname"):
+        if d and not str(d).startswith("<UPDATE") and not str(d).startswith("/home/yourname"):
             os.makedirs(d, exist_ok=True)
 
 
